@@ -1,4 +1,4 @@
 package lk.ijse.gdse.backend.bo.custom.impl;
 
-public class OrderBOImpl {
+public class OrderDetailBOImpl {
 }

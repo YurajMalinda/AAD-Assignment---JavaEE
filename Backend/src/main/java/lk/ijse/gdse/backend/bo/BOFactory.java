@@ -2,7 +2,7 @@ package lk.ijse.gdse.backend.bo;
 
 import lk.ijse.gdse.backend.bo.custom.impl.CustomerBOImpl;
 import lk.ijse.gdse.backend.bo.custom.impl.ItemBOImpl;
-import lk.ijse.gdse.backend.bo.custom.impl.OrderBOImpl;
+import lk.ijse.gdse.backend.bo.custom.impl.OrderDetailBOImpl;
 import lk.ijse.gdse.backend.bo.custom.impl.PlaceOrderBOImpl;
 
 public class BOFactory {
@@ -19,7 +19,7 @@ public class BOFactory {
     public enum BOTypes{
         CUSTOMER_BO,
         ITEM_BO,
-        ORDERS_BO,
+        ORDER_DETAILS_BO,
         PLACE_ORDER_BO
     }
 
@@ -29,8 +29,8 @@ public class BOFactory {
                 return (T) new CustomerBOImpl();
             case ITEM_BO:
                 return (T) new ItemBOImpl();
-            case ORDERS_BO:
-                return (T) new OrderBOImpl();
+            case ORDER_DETAILS_BO:
+                return (T) new OrderDetailBOImpl();
             case PLACE_ORDER_BO:
                 return (T) new PlaceOrderBOImpl();
             default:
