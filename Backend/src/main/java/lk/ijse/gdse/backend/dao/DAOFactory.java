@@ -8,7 +8,7 @@ import lk.ijse.gdse.backend.dao.custom.impl.OrderDetailsDAOImpl;
 public class DAOFactory {
     private static DAOFactory daoFactory;
 
-    public DAOFactory() {
+    private DAOFactory() {
 
     }
 
@@ -23,7 +23,7 @@ public class DAOFactory {
         ORDER_DETAILS_DAO
     }
 
-    public <T extends SuperDAO> T getDao(DAOTypes daoTypes){
+    public <T extends SuperDAO> T getDAO(DAOTypes daoTypes){
         switch (daoTypes){
             case CUSTOMER_DAO:
                 return (T) new CustomerDAOImpl();
