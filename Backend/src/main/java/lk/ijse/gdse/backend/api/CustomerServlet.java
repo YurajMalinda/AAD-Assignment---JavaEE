@@ -78,7 +78,6 @@ public class CustomerServlet extends HttpServlet {
         String id = customerDTO.getCustId();
         String name = customerDTO.getCustName();
         String address = customerDTO.getCustAddress();
-//        String salary = String.valueOf(customerDTO.getCustSalary());
         String salary = String.valueOf(customerDTO.getCustSalary());
         System.out.println(salary);
 
@@ -100,12 +99,12 @@ public class CustomerServlet extends HttpServlet {
             resp.getWriter().write(jsonb.toJson("Invalid customer address format!. Please use minimum 4 characters."));
             return;
         }
-//        if (salary == null || !salary.matches("[0-9]+([.][0-9]{2})?")) {
-//            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            resp.setContentType("application/json");
-//            resp.getWriter().write(jsonb.toJson("Invalid customer salary format!. Please use the pattern '1000.00'."));
-//            return;
-//        }
+        if (salary == null || !salary.matches("[1-9]\\d*(\\.\\d+)?")) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("application/json");
+            resp.getWriter().write(jsonb.toJson("Invalid customer salary format!. Please use the pattern '1000.00'."));
+            return;
+        }
         try (Connection connection = dataSource.getConnection()) {
             boolean saveCustomer = customerBO.saveCustomer(connection, customerDTO);
             if (saveCustomer) {
@@ -149,12 +148,13 @@ public class CustomerServlet extends HttpServlet {
             resp.getWriter().write(jsonb.toJson("Invalid customer address format!. Please use minimum 4 characters."));
             return;
         }
-//        if (salary == null || !salary.matches("[0-9]+([.][0-9]{2})?")) {
-//            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//            resp.setContentType("application/json");
-//            resp.getWriter().write(jsonb.toJson("Invalid customer salary format!. Please use the pattern '1000.00'."));
-//            return;
-//        }
+        if (salary == null || !salary.matches("[1-9]\\d*(\\.\\d+)?")) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setContentType("application/json");
+            resp.getWriter().write(jsonb.toJson("Invalid customer salary format!. Please use the pattern '1000.00'."));
+            return;
+        }
+
         try (Connection connection = dataSource.getConnection()) {
             boolean updateCustomer = customerBO.updateCustomer(connection, customerDTO);
             if (updateCustomer) {
@@ -192,7 +192,7 @@ public class CustomerServlet extends HttpServlet {
             }else {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 resp.setContentType("application/json");
-                resp.getWriter().write(jsonb.toJson("Customer updated failed!."));
+                resp.getWriter().write(jsonb.toJson("Customer deleted failed!."));
             }
         } catch (SQLException e) {
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

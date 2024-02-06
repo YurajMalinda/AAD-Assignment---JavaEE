@@ -34,7 +34,12 @@ public class CustomerDAOImpl implements CustomerDAO {
     }
 
     @Override
-    public Customer search(Connection connection, String id) {
+    public Customer search(Connection connection, String id) throws SQLException {
+        String sql =  "SELECT * FROM customer WHERE custId = ?";
+        ResultSet resultSet = SQLUtil.execute(sql, connection, id);
+        if (resultSet.next()) {
+            return new Customer(resultSet.getString(1), resultSet.getString(2), resultSet.getString(3), resultSet.getDouble(4));
+        }
         return null;
     }
 

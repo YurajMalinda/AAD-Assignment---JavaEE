@@ -10,7 +10,7 @@ public interface CrudDAO<CONNECTION, T, ID> extends SuperDAO{
 
     boolean update(CONNECTION connection, T entity) throws SQLException;
 
-    T search(CONNECTION connection, ID id);
+    T search(CONNECTION connection, ID id) throws SQLException;
 
     boolean delete(CONNECTION connection, ID id) throws SQLException;
 }
