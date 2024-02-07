@@ -1,5 +1,57 @@
 getAllCustomer();
 
+// --------------Search customer function---------------------------
+$("#btnSearchCustomer").click(function () {
+    let cusId = $("#exampleInput").val();
+    $("#tblCustomer").empty();
+    $.ajax({
+        type : "GET",
+        url: "http://localhost:8080/backend/customers?option=search&id=" + cusId,
+        success : function (details) {
+            console.log(details);
+            console.log(details.custId);
+
+            let row =  `<tr>
+                     <td>${details.custId}</td>
+                     <td>${details.custName}</td>
+                     <td>${details.custAddress}</td>
+                     <td>${details.custSalary}</td>
+                    </tr>`;
+
+            $("#tblCustomer").append(row);
+            bindTableRowEventsCustomer();
+        },
+        error : function (error) {
+            Swal.fire({
+                icon: "warning",
+                title: "Oooops...",
+                text: "No result found!..."
+            })
+        }
+    });
+});
+
+// --------------Search customer function---------------------------
+function searchCustomer(customerId) {
+    $.ajax({
+        type : "GET",
+        url: "http://localhost:8080/backend/customers?option=search&id=" + customerId,
+        success : function (details) {
+            console.log(details);
+            return true;
+        },
+        error : function (error) {
+            console.log(error);
+            Swal.fire({
+                icon: 'warning',
+                title: 'Oops...',
+                text: '"No such Customer..please check the ID..!',
+            })
+            return false;
+        }
+    });
+}
+
 // --------------Save btn event---------------------------
 $("#btnSaveCustomer").click(function (){
     if (checkAllCustomer()){
@@ -9,68 +61,91 @@ $("#btnSaveCustomer").click(function (){
     }
 });
 
+// --------------Save Customer function---------------------------
+function saveCustomer() {
+    let cusId = $("#txtCusId").val();
+    let cusName = $("#txtCusName").val();
+    let cusAddress = $("#txtCusAddress").val();
+    let cusSalary = $("#txtCusSalary").val();
+
+    $.ajax({
+        type : "POST",
+        url : "http://localhost:8080/backend/customers",
+        contentType : "application/json",
+        data : JSON.stringify({
+                custId : cusId,
+                custName : cusName,
+                custAddress : cusAddress,
+                custSalary : cusSalary
+            }),
+
+        success : function (details) {
+            console.log(details);
+            Swal.fire({
+                position: "center",
+                icon : "success",
+                title : "Customer has been saved successfully!...",
+                showConfirmButton: false,
+                timer: 2000
+            });
+            clearCustomerInputFields();
+            getAllCustomer();
+            loadCustomerIds();
+        },
+        error : function (jqXHR, textStatus, errorThrown) {
+            console.log("AJAX Error: " + textStatus, errorThrown, jqXHR);
+            if (jqXHR.status == 409) {
+                Swal.fire({
+                    position: "center",
+                    icon: "warning",
+                    title: jqXHR.responseText,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+            }
+        }
+    });
+}
+
 // --------------Get all btn event---------------------------
 $("#getAll").click(function (){
     getAllCustomer();
 })
-
-// --------------Search customer function---------------------------
-function searchCustomer(customerId) {
-    return customersDB.find(function (customer){
-        return customer.id == customerId;
-    });
-}
-
-// --------------Save Customer function---------------------------
-function saveCustomer() {
-    let customerId = $("#txtCusId").val();
-    // check customer if exists or not
-    if(searchCustomer(customerId.trim()) == undefined){
-        let customerName = $("#txtCusName").val();
-        let customerAddress = $("#txtCusAddress").val();
-        let customerSalary = $("#txtCusSalary").val();
-
-        let newCustomer = Object.assign({}, CustomerModel);
-
-        newCustomer.id = customerId;
-        newCustomer.name = customerName;
-        newCustomer.address = customerAddress;
-        newCustomer.salary = customerSalary;
-
-        customersDB.push(newCustomer);
-        clearCustomerInputFields();
-        getAllCustomer();
-        alert("Customer added!");
-        loadCustomerIds();
-    }else{
-        alert("Customer exists!")
-        clearCustomerInputFields();
-    }
-}
 
 // --------------Get all customer function---------------------------
 function getAllCustomer(){
     $("#tblCustomer").empty();
     $("#modalTable").empty();
 
-    for (let i=0; i<customersDB.length; i++){
-        let id = customersDB[i].id;
-        let name = customersDB[i].name;
-        let address = customersDB[i].address;
-        let salary = customersDB[i].salary;
+    $.ajax({
+       type: "GET",
+       url: "http://localhost:8080/backend/customers?option=getAll",
+        success : function (details) {
+           console.log("Success: ", details);
+           console.log(details.custId);
+           for (let customer of details) {
 
-        let row =  `<tr>
-                        <td>${id}</td>
-                        <td>${name}</td>
-                        <td>${address}</td>
-                        <td>${salary}</td>
-                    </tr>`;
+               let row = `<tr>
+                        <td>${customer.custId}</td>
+                        <td>${customer.custName}</td>
+                        <td>${customer.custAddress}</td>
+                        <td>${customer.custSalary}</td>
+                        </tr>`;
 
-        $("#tblCustomer").append(row);
-        $("#modalTable").append(row);
-
-        bindTableRowEventsCustomer();
-    }
+               $("#tblCustomer").append(row);
+               $("#modalTable").append(row);
+               bindTableRowEventsCustomer();
+           }
+        },
+        error: function (error) {
+           console.log(error);
+            Swal.fire({
+                icon: "warning",
+                title: "Oooops...",
+                text: "No result found!..."
+            });
+        }
+    });
 }
 
 // --------------Bind row to fields function---------------------------
@@ -93,28 +168,49 @@ function bindTableRowEventsCustomer() {
 // --------------Delete btn event---------------------------
 $("#btnDeleteCustomer").click(function (){
     let id = $("#txtCusId").val();
-
-    let confirmation = confirm("Are you want to delete "+id+" ?");
-    if (confirmation){
-        let response = deleteCustomer(id);
-        if (response){
-            clearCustomerInputFields();
-            getAllCustomer();
-            alert("Customer deleted!.");
-        }else {
-            alert("Customer not deleted!.")
-        }
-    }
+    deleteCustomer(id);
 });
 
 // --------------Delete customer function---------------------------
 function deleteCustomer(id) {
-    for (let i = 0; i < customersDB.length; i++){
-        if (customersDB[i].id == id){
-            customersDB.splice(i,1);
-            return true;
+    Swal.fire({
+        position: "center",
+        icon : "warning",
+        title : "Do you want to delete this customer ?.",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes",
+        cancelButtonText: "No"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type : "DELETE",
+                url : "http://localhost:8080/backend/customers?id="+id,
+                contentType : "application/json",
+                success : function (details) {
+                    Swal.fire({
+                        position: "top-up",
+                        icon : "success",
+                        title : "Customer has been deleted successfully!...",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    clearCustomerInputFields();
+                    getAllCustomer();
+                },
+                error : function (jqXHR, textStatus, errorThrown) {
+                    console.log("ÄJAX error: "+ textStatus, errorThrown);
+                    Swal.fire({
+                        position: "top-up",
+                        icon: "warning",
+                        title: "Customer has been deleted unsuccessfully!!!",
+                        timer: 2000
+                    });
+                }
+            });
         }
-    }
+    });
     return false;
 }
 
@@ -127,23 +223,63 @@ $("#btnUpdateCustomer").click(function (){
 
 // --------------Update Customer function---------------------------
 function updateCustomer(id) {
-    if(searchCustomer(id) == undefined){
-        alert("No such customer. Please check the ID!");
-    }else{
-        let confirmation = confirm("Do you really want to update this customer.?");
-        if (confirmation){
-            let customer = searchCustomer(id);
+    if (searchCustomer(id)) {
+        Swal.fire({
+            icon: "warning",
+            title: "Oooops...",
+            text: "No such customer. Please check the ID!..."
+        });
+    } else {
+        let confirmation = confirm("Do you want to update this customer ?.")
+            // Swal.fire({
+            //     position: "center",
+            //     icon : "warning",
+            //     title : "Do you want to update this customer ?.",
+            //     showConfirmButton: true,
+            //     timer: 2000
+            // });
 
-            let name = $("#txtCusName").val();
-            let address = $("#txtCusAddress").val();
-            let salary = $("#txtCusSalary").val();
+        if (confirmation) {
+            console.log(id);
+            let cusId = $("#txtCusId").val();
+            let cusName = $("#txtCusName").val();
+            let cusAddress = $("#txtCusAddress").val();
+            let cusSalary = $("#txtCusSalary").val();
 
-            customer.name = name;
-            customer.address = address;
-            customer.salary = salary;
-
-            getAllCustomer();
-            alert("Customer updated!");
+            $.ajax({
+                type : "PUT",
+                url : "http://localhost:8080/backend/customers",
+                contentType: "application/json",
+                data : JSON.stringify(
+                    {
+                        custId : cusId,
+                        custName : cusName,
+                        custAddress : cusAddress,
+                        custSalary : cusSalary
+                    }),
+                success : function (details) {
+                    console.log(details);
+                    Swal.fire({
+                        position: "center",
+                        icon : "success",
+                        title : "Customer has been updated successfully!...",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                    clearCustomerInputFields();
+                    getAllCustomer();
+                },
+                error : function (jqXHR, textStatus, errorThrown) {
+                    console.log("AJAX Error: " + textStatus, errorThrown, jqXHR);
+                    Swal.fire({
+                        position: "center",
+                        icon: "warning",
+                        title: "Customer has been not updated!!!",
+                        showConfirmButton: false,
+                        timer: 2000
+                    });
+                }
+            });
         }
     }
 }

@@ -29,6 +29,7 @@ $("#txtItemCode, #txtItemName, #txtItemPrice, #txtItemQuantity").on("keydown key
     checkValidationsItem(item_vArray[indexNo]);
 
     setBtnGroupItem();
+    $("#btnUpdateItem").prop("disabled", false);
 
     if (e.key == "Enter") {
         if (e.target.code != item_vArray[item_vArray.length-1].field.attr("code")) {

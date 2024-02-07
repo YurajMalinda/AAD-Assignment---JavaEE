@@ -30,6 +30,7 @@ $("#txtCusId, #txtCusName, #txtCusAddress, #txtCusSalary").on("keydown keyup", f
     checkValidationsCustomer(cus_vArray[indexNo]);
 
     setBtnGroupCustomer();
+    $("#btnUpdateCustomer").prop("disabled", false);
 
     if (e.key == "Enter") {
         if (e.target.id != cus_vArray[cus_vArray.length-1].field.attr("id")) {
