@@ -14,6 +14,5 @@ public class PlaceOrderDTO {
     private String orderId;
     private LocalDate orderDate;
     private String custId;
-    private double total;
-    private List<OrderDetailDTO> orderDetailList;
+    private List<OrderDetailDTO> orderDetails;
 }
