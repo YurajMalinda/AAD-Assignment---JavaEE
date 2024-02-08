@@ -1,8 +1,14 @@
-$("#orderId").val(generateNextOrderId());
+generateNextOrderId(function (nextOrderId) {
+    $("#orderId").val(nextOrderId);
+});
+
 $("#total").text(0.00);
 $("#subTotal").text(0.00);
+
 var date = new Date();
-$("#orderDate").val(`${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`);
+var formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+$("#orderDate").val(formattedDate);
+
 loadCustomerIds();
 loadItemCodes();
 $("#discount").val(0.00);
@@ -35,9 +41,12 @@ $("#btnPurchase").on('click', function () {
         clearPlaceOrderTextFields();
         $("#tblPlaceOrder").empty();
         cartDetails = [];
-        $("#orderId").val(generateNextOrderId());
     }else {
-        alert("Insufficient credit! please check cash...");
+        Swal.fire({
+            icon: "warning",
+            title: "Insufficient credit!",
+            text: "Please check cash..."
+        });
     }
     loadAllOrderDetails();
 });
@@ -56,57 +65,104 @@ $("#cash").on("keydown keyup", function (e) {
     enabledOrDisabledBtn()
 });
 
-function generateNextOrderId() {
-    let orderId = ordersDB[ordersDB.length-1].oid;
-    if (orderId!=null){
-        let strings = orderId.split("OID-");
-        let id= parseInt(strings[1]);
-        ++id;
-        let digit = id.toString().padStart(3, '0');
-        return "OID-" + digit;
-    }else {
-        return "OID-001";
-    }
+function generateNextOrderId(callback) {
+    $.ajax({
+        type : "GET",
+        url : "http://localhost:8080/backend/placeOrder?option=generateId",
+        success : function (details) {
+            console.log("Generate" + details);
+            let orderId = details;
+            if (orderId != null) {
+                let strings = orderId.split("ORD-");
+                console.log(orderId);
+
+                let id = parseInt(strings[1]);
+                console.log(id);
+                ++id;
+                let digit = id.toString().padStart(3, "0");
+                callback("ORD-"+digit);
+            } else {
+                callback("ORD-001");
+            }
+        },
+        error: function (error) {
+            console.log(error);
+            callback("ORD-001");
+        }
+    });
 }
 
 function loadCustomerIds() {
     $("#selectFormCustomer").empty();
     $("#selectFormCustomer").append(`<option selected disabled>Select here</option>`);
-    for (const customer of customersDB) {
-        $("#selectFormCustomer").append(`<option>${customer.id}</option>`);
-    }
+
+    $.ajax({
+        type : "GET",
+        url : "http://localhost:8080/backend/customers?option=getAll",
+        success : function (details) {
+            console.log(details);
+            console.log(details.custId);
+            for (let customer of details) {
+                $("#selectFormCustomer").append(`<option>${customer.custId}</option>`);
+            }
+        },
+        error : function (error) {
+            console.log(error);
+        }
+    });
 }
 
 function loadItemCodes() {
     $("#selectItemFormItem").empty();
     $("#selectItemFormItem").append(`<option selected disabled>Select here</option>`);
-    for (const items of itemsDB) {
-        $("#selectItemFormItem").append(`<option>${items.code}</option>`);
-    }
+    $.ajax({
+        type : "GET",
+        url : "http://localhost:8080/backend/items?option=getAll",
+        success : function (details) {
+            console.log(details);
+            console.log(details.itemCode);
+            for (let item of details) {
+                $("#selectItemFormItem").append(`<option>${item.itemCode}</option>`);
+            }
+        },
+        error : function (error) {
+            console.log(error);
+        }
+    });
 }
 
 function setCustomerDetails() {
-    for (const customer of customersDB) {
-        if (customer.id === $("#selectFormCustomer").val()) {
-            $("#cusId").val(`${customer.id}`);
-            $("#cusName").val(customer.name);
-            $("#cusAddress").val(customer.address);
-            $("#cusSalary").val(customer.salary);
-            break;
-        }
-    }
+    $.ajax({
+       type : "GET",
+       url : "http://localhost:8080/backend/customers?option=search&id=" + $("#selectFormCustomer").val(),
+       success : function (details) {
+           console.log(details);
+           $("#cusId").val(details.custId);
+           $("#cusName").val(details.custName);
+           $("#cusAddress").val(details.custAddress);
+           $("#cusSalary").val(details.custSalary);
+       },
+       error : function (error) {
+           console.log(error);
+       }
+    });
 }
 
 function setItemDetails() {
-    for (const item of itemsDB) {
-        if (item.code === $("#selectItemFormItem").val()) {
-            $("#itemId").val(`${item.code}`);
-            $("#itemName").val(item.name);
-            $("#price").val(item.price);
-            $("#quantity").val(item.quantity);
-            break;
+    $.ajax({
+        type : "GET",
+        url : "http://localhost:8080/backend/items?option=search&itemCode=" + $("#selectItemFormItem").val(),
+        success : function (details) {
+            console.log(details);
+            $("#itemId").val(details.itemCode);
+            $("#itemName").val(details.itemName);
+            $("#price").val(details.price);
+            $("#quantity").val(details.qty);
+        },
+        error : function (error) {
+            console.log(error);
         }
-    }
+    });
 }
 
 function quantityManage() {
@@ -150,46 +206,83 @@ function addToPlaceOrderTable() {
             cartTm.total = total;
             cartDetails.push(cartTm);
         }
-        alert("Order has been added successfully!.");
+        Swal.fire({
+            position: "center",
+            icon : "success",
+            title : "Order has been added to the cart successfully!...",
+            showConfirmButton: false,
+            timer: 2000
+        });
         quantityManage();
         calculateTotal();
         $("#orderQty").val("");
         loadAllOrderDetails();
     }else {
-        alert("Please check the quantity!. Order has been added unsuccessfully!.");
+        Swal.fire({
+            icon: "warning",
+            title: "Please check the quantity!.",
+            text: "Order has not been added to the cart!."
+        });
+        loadAllOrderDetails();
     }
+}
+
+function getItemDetails() {
+    let rows = $("#tblPlaceOrder").children().length;
+    console.log(rows);
+    var array = [];
+    for (let i = 0; i < rows; i++) {
+        let itemCode = $("#tblPlaceOrder").children().eq(i).children(":eq(0)").text();
+        let itemQty = $("#tblPlaceOrder").children().eq(i).children(":eq(3)").text();
+        let itemPrice = $("#tblPlaceOrder").children().eq(i).children(":eq(4)").text();
+        console.log(itemCode,itemQty, itemPrice);
+        array.push({itemCode: itemCode, qty: itemQty, unitPrice: itemPrice});
+    }
+    return array;
 }
 
 function placeOrderDetails() {
     let orderId = $("#orderId").val();
     let orderDate = $("#orderDate").val();
     let customerId = $("#cusId").val();
-    let iCode = $("#itemId").val();
-    let orQty =$(this).children(":eq(3)").text();
-    let tota = $(this).children(":eq(4)").text();
+    let orderDetails = getItemDetails();
+    console.log(orderId);
 
-    let orders = Object.assign({},orderModel);
-    orders.oid = orderId;
-    orders.date = orderDate;
-    orders.customerID = customerId;
-    ordersDB.push(orders);
+    let orderObj = {
+        orderId : orderId,
+        orderDate : orderDate,
+        custId : customerId,
+        orderDetails : orderDetails
+    };
 
-    for (const cartD of cartDetails) {
-        let orderDetail = Object.assign({},orderDetailsModel);
-        orderDetail.oid = orderId;
-        orderDetail.code = cartD.itemCode;
-        orderDetail.qty = cartD.quantity;
-        orderDetail.payment = cartD.total;
-        let items = searchItem( cartD.itemCode);
-
-        if (items!=null){
-            items.qtyOnHand=items.qtyOnHand-cartD.quantity;
+    $.ajax({
+        type : "POST",
+        url : "http://localhost:8080/backend/placeOrder",
+        contentType : "application/json",
+        data : JSON.stringify(orderObj),
+        success : function (details) {
+            console.log(details);
+            Swal.fire({
+                icon : "success",
+                title : "Order has been placed successfully!...",
+                showConfirmButton: false,
+                timer: 2000
+            });
+            generateNextOrderId(function (nextOrderId) {
+                $("#orderId").val(nextOrderId);
+            });
+            loadAllOrderDetails()
+        },
+        error : function (jqXHR, textStatus, errorThrown) {
+            console.log("AJAX error: " + textStatus, errorThrown, jqXHR);
+            Swal.fire({
+                position: "top-up",
+                icon: "warning",
+                title: "Order has been placed unsuccessfully!!!",
+                timer: 2000
+            });
         }
-
-        orders.orderDetails.push(orderDetail);
-    }
-    alert("Order has been placed successfully!.")
-    generateNextOrderId();
+    });
 }
 
 function loadAllOrderDetails() {
@@ -232,8 +325,11 @@ function calculateTotal() {
 
 function calculateSubTotal() {
     let subTotal = parseFloat($("#total").text());
+    console.log(subTotal);
     let discount = subTotal * parseFloat($("#discount").val()) * 0.01;
+    console.log(discount);
     let newSubTotal = subTotal - discount;
+    console.log(newSubTotal);
     $("#subTotal").text(newSubTotal.toFixed(2));
 }
 
@@ -241,6 +337,7 @@ function calculateBalance() {
     if ($("#cash").val().length!=0 && ($("#subTotal").text().length!=0)){
         let subTotal = parseFloat($("#subTotal").text());
         let cash = parseFloat($("#cash").val());
+        console.log(cash);
         let balance = cash - subTotal;
         $("#balance").val(balance.toFixed(2));
     }else {
