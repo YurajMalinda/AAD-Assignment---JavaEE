@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -11,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 public class PlaceOrderDTO {
     private String orderId;
-    private String orderDate;
+    private LocalDate orderDate;
     private String custId;
     private double total;
     private List<OrderDetailDTO> orderDetailList;

@@ -2,7 +2,7 @@ package lk.ijse.gdse.backend.dao;
 
 import lk.ijse.gdse.backend.dao.custom.impl.CustomerDAOImpl;
 import lk.ijse.gdse.backend.dao.custom.impl.ItemDAOImpl;
-import lk.ijse.gdse.backend.dao.custom.impl.OrderDAOImpl;
+import lk.ijse.gdse.backend.dao.custom.impl.PlaceOrderDAOImpl;
 import lk.ijse.gdse.backend.dao.custom.impl.OrderDetailsDAOImpl;
 
 public class DAOFactory {
@@ -30,7 +30,7 @@ public class DAOFactory {
             case ITEM_DAO:
                 return (T) new ItemDAOImpl();
             case ORDERS_DAO:
-                return (T) new OrderDAOImpl();
+                return (T) new PlaceOrderDAOImpl();
             case ORDER_DETAILS_DAO:
                 return (T) new OrderDetailsDAOImpl();
             default:
