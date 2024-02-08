@@ -43,29 +43,31 @@
 </nav>
 
 <!--Home-->
-<div id="homeContent" class="container-fluid mt-5">
-    <div class="row d-flex justify-content-evenly ">
-        <div class="col-3">
-            <div class="card">
-                <div class="card-body bg-success">
-                    <img src="assets/customer.png" class="img-thumbnail" alt="...">
-                    <p class="text-center h1">0</p>
+<div id="homeContent">
+    <div class="container-fluid mt-5">
+        <div class="row d-flex justify-content-evenly ">
+            <div class="col-3" id="customerIcon">
+                <div class="card">
+                    <div class="card-body bg-success">
+                        <img src="assets/customer.png" class="img-thumbnail" alt="...">
+                        <p class="text-center h1">Customer</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-3">
-            <div class="card">
-                <div class="card-body bg-success">
-                    <img src="assets/shopping.png" class="img-thumbnail" alt="...">
-                    <p class="h1 text-center">0</p>
+            <div class="col-3" id="itemsIcon">
+                <div class="card">
+                    <div class="card-body bg-success">
+                        <img src="assets/shopping.png" class="img-thumbnail" alt="...">
+                        <p class="h1 text-center">Items</p>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-3">
-            <div class="card">
-                <div class="card-body bg-success">
-                    <img src="assets/order.png" class="img-thumbnail" alt="...">
-                    <p class="text-center h1">0</p>
+            <div class="col-3" id="ordersIcon">
+                <div class="card">
+                    <div class="card-body bg-success">
+                        <img src="assets/order.png" class="img-thumbnail" alt="...">
+                        <p class="text-center h1">Orders</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -496,6 +498,7 @@
 <script src="controller/OrderController.js"></script>
 <script src="controller/validation/OrderValidation.js"></script>
 <script src="controller/OrderDetailsController.js"></script>
+<script src="controller/HomeController.js"></script>
 <script src="model/OrderModel.js"></script>
 <script src="model/OrderDetailsModel.js"></script>
 <script src="model/cartModel.js"></script>
