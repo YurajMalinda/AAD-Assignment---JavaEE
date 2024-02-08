@@ -48,7 +48,7 @@ $("#btnPurchase").on('click', function () {
             text: "Please check cash..."
         });
     }
-    loadAllOrderDetails();
+    // loadAllOrderDetails();
 });
 
 $("#orderQty").on("keydown keyup", function (e) {
@@ -271,7 +271,7 @@ function placeOrderDetails() {
             generateNextOrderId(function (nextOrderId) {
                 $("#orderId").val(nextOrderId);
             });
-            loadAllOrderDetails()
+            loadOrderDetails()
         },
         error : function (jqXHR, textStatus, errorThrown) {
             console.log("AJAX error: " + textStatus, errorThrown, jqXHR);

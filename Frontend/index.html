@@ -34,6 +34,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="#" id="orderLink">Orders</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="orderHistoryLink">Orders History</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -440,6 +443,46 @@
     </div>
 </section>
 
+<section id="orderHistory">
+    <div class="container-fluid mt-4">
+        <div class="card shadow-lg">
+            <div class="card-header bg-success">
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="mb-3">
+                            <input type="text" class="form-control bg-light-subtle shadow" id="txtOrderDetailSearch" placeholder="Search">
+                        </div>
+                    </div>
+                    <div class="col">
+                        <button type="button" class="btn btn-outline-success" id="btnSearchOrderDetail">Search</button>
+                        <button type="button" class="btn btn-outline-success" id="btnGetAllOrderDetail">Get All</button>
+                    </div>
+                </div>
+                <div class="row mt-4 mb-4">
+                    <div style="height: 415px; overflow-y: auto;">
+                        <table class="table table-hover table-bordered shadow-lg mb-0">
+                            <thead class="table-light">
+                            <tr>
+                                <th scope="col" class="bg-success text-white">OrderId</th>
+                                <th scope="col" class="bg-success text-white">Item code</th>
+                                <th scope="col" class="bg-success text-white">Quantity</th>
+                                <th scope="col" class="bg-success text-white">Total</th>
+                            </tr>
+                            </thead>
+                            <tbody id="tblOrderDetails">
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
 <script src="assets/Jquery/code.jquery.com_jquery-3.7.1.min.js"></script>
 <script src="assets/Bootstrap/js/bootstrap.js"></script>
 <script src="controller/DashboardController.js"></script>
@@ -452,6 +495,7 @@
 <script src="model/ItemModel.js"></script>
 <script src="controller/OrderController.js"></script>
 <script src="controller/validation/OrderValidation.js"></script>
+<script src="controller/OrderDetailsController.js"></script>
 <script src="model/OrderModel.js"></script>
 <script src="model/OrderDetailsModel.js"></script>
 <script src="model/cartModel.js"></script>

@@ -1,7 +1,7 @@
 initUI();
 
 function clearAll() {
-    $("#homeContent, #customerContent, #itemContent, #orderContent").css("display", "none");
+    $("#homeContent, #customerContent, #itemContent, #orderContent, #orderHistory").css("display", "none");
 }
 
 function initUI() {
@@ -24,6 +24,9 @@ function setLastView() {
             break;
         case "ORDER":
             setView($("#orderContent"));
+            break;
+        case "ORDER_HISTORY":
+            setView($("#orderHistory"));
             break;
         default:
             setView($("#homeContent"));
@@ -51,6 +54,9 @@ function saveLastView(id) {
         case "orderContent":
             localStorage.setItem("view", "ORDER");
             break;
+        case "orderHistory":
+            localStorage.setItem("view", "ORDER_HISTORY");
+            break;
     }
 }
 
@@ -69,6 +75,10 @@ $("#itemLink").click(function (){
 
 $("#orderLink").click(function (){
     setView($("#orderContent"));
+})
+
+$("#orderHistoryLink").click(function (){
+    setView($("#orderHistory"));
 })
 
 
