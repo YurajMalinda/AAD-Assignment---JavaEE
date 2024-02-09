@@ -16,7 +16,9 @@ The backend is the behind-the-scenes technology responsible for server-side and 
    <br><br>
 3. Mobile Accessibility :-- Responsive design or dedicated mobile apps for managing POS activities on smartphones or tablets.
    <br><br>
-   [![Watch the video](Images/Responsive.png)](Images/Responsive.mp4)
+   
+https://github.com/YurajMalinda/AAD-Assignment---JavaEE/assets/125721514/c68cc799-fec6-4855-a35d-787653eb8ea1
+
    <br><br>
 4. JavaEE Architecture :-- Built using the Java Platform, Enterprise Edition, providing a robust and scalable architecture for enterprise-level applications.
 5. Apache Tomcat Server :-- Configured to run on the Apache Tomcat server, ensuring reliable and efficient web application hosting. 
@@ -65,9 +67,8 @@ To run the POS system backend locally, follow these steps :
 </p>
 
 ## System Tour
-- Watch this video!
 
-[![Watch the video](Images/Customer.png)](Images/Demo.mp4)
+https://github.com/YurajMalinda/AAD-Assignment---JavaEE/assets/125721514/fc9398a5-df9c-41b1-8e77-bc4b66a7c1f6
 
 ## Contributing
 
